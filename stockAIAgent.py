@@ -9,8 +9,8 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 
 # Set your OpenAI API key
-OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"])
-NEWS_API_KEY = st.secrets["NEWS_API_KEY"])
+OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
+NEWS_API_KEY = st.secrets["NEWS_API_KEY"]
 
 # Function to fetch financial data
 def get_financials(ticker):
