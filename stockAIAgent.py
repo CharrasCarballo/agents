@@ -70,9 +70,6 @@ def main():
     st.title("AI Stock Investment Advisor")
     company_name = st.text_input("Enter Company Name:")
     ticker = st.text_input("Enter Stock Ticker Symbol:")
-
-    st.write(OPENAI_API_KEY)
-    st.write(NEWS_API_KEY)
     
     if st.button("Analyze Stock"):
         if ticker:
