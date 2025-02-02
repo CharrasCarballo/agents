@@ -17,12 +17,17 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 # Function to fetch financial data
 def get_financials(ticker):
     stock = yf.Ticker(ticker)
+
     financials = {
-        "Revenue": stock.financials.loc["Total Revenue"],
-        "Net Income": stock.financials.loc["Net Income"],
-        "EPS": stock.financials.loc["Diluted EPS"],
-        "Stock Price History": stock.history(period="5y")["Close"],
+        "Revenue": stock.financials.loc["Total Revenue"] if "Total Revenue" in stock.financials.index else "N/A",
+        "Net Income": stock.financials.loc["Net Income"] if "Net Income" in stock.financials.index else "N/A",
+        "EPS": stock.financials.loc["Diluted EPS"] if "Diluted EPS" in stock.financials.index else "N/A",
+        "Stock Price History": stock.history(period="5y")["Close"]
     }
+
+    # Convert stock price history index to timezone-naive
+    financials["Stock Price History"].index = financials["Stock Price History"].index.tz_convert(None)
+
     return financials
 
 # Function to compare with competitors
