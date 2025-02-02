@@ -3,7 +3,7 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 import requests
-import openai
+from openai import OpenAI
 import matplotlib.pyplot as plt
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
@@ -11,6 +11,8 @@ from datetime import datetime, timedelta
 # Set your OpenAI API key
 OPENAI_API_KEY = st.secrets["OPENAI_API_KEY"]
 NEWS_API_KEY = st.secrets["NEWS_API_KEY"]
+
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 # Function to fetch financial data
 def get_financials(ticker):
@@ -38,14 +40,16 @@ def get_executive_data(ticker):
 def get_ai_insights(company_name):
     prompt = f"""Analyze the financial health, future prospects, and challenges for {company_name}.
     Consider its recent earnings, industry trends, and executive leadership."""
-    
-    openai.api_key = OPENAI_API_KEY
-    response = openai.ChatCompletion.create(
+
+    response = client.chat.completions.create(
         model="gpt-4",
-        messages=[{"role": "system", "content": "You are a financial analyst."},
-                  {"role": "user", "content": prompt}]
+        messages=[
+            {"role": "system", "content": "You are a financial analyst."},
+            {"role": "user", "content": prompt}
+        ]
     )
-    return response["choices"][0]["message"]["content"]
+
+    return response.choices[0].message.content
 
 # Function to fetch real-time news
 def get_latest_news(company_name):
