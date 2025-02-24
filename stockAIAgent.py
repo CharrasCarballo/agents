@@ -158,7 +158,7 @@ def main():
             else:
                 # Display financials
                 st.subheader("Financial Overview (Percentage Change)")
-                plt.figure(figsize=(10, 4))
+                plt.figure(figsize=(20, 8))
                 for column in scaleTicker.columns:
                   plt.plot(scaleTicker.index, scaleTicker[column], label=column)
                 plt.title(f"Financial Metrics Percentage Change for {companyName}", fontsize=12)
