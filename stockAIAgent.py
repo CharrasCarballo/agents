@@ -157,18 +157,29 @@ def main():
                 st.error(companyName)  # Display the error message
             else:
                 # Display financials
-                st.subheader("Financial Overview")
+                st.subheader("Financial Overview (Percentage Change)")
                 plt.figure(figsize=(10, 4))
-                plt.plot(scaleTicker)
-                plt.legend()
-                st.pyplot(plt)
-    
+                for column in scaleTicker.columns:
+                  plt.plot(scaleTicker.index, scaleTicker[column], label=column)
+                plt.title(f"Financial Metrics Percentage Change for {companyName}", fontsize=12)
+                plt.xlabel("Date", fontsize=10)
+                plt.ylabel("Percentage Change", fontsize=10)
+                plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
+                plt.grid(True, linestyle='--', alpha=0.7)
+                st.pyplot(plt.gcf())  # Use gcf() to get current figure
+                plt.clf()  # Clear the figure for the next plot
+                
                 # Display stock price trend
                 st.subheader("Stock Price Trend")
                 plt.figure(figsize=(10, 4))
-                plt.plot(stockPriceHistory)
-                plt.legend()
-                st.pyplot(plt)
+                plt.plot(stockPriceHistory.index, stockPriceHistory, label="Closing Price", color='blue')
+                plt.title(f"5-Year Stock Price History for {companyName}", fontsize=12)
+                plt.xlabel("Date", fontsize=10)
+                plt.ylabel("Stock Price (USD)", fontsize=10)
+                plt.legend(title="Price", bbox_to_anchor=(1.05, 1), loc='upper left')
+                plt.grid(True, linestyle='--', alpha=0.7)
+                st.pyplot(plt.gcf())
+                plt.clf()  # Clear the figure
             
             # # Competitor Analysis
             # st.subheader("Competitor Analysis")
