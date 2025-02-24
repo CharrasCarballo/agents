@@ -150,15 +150,15 @@ def main():
             # Display financials
             st.subheader("Financial Overview")
             plt.figure(figsize=(10, 4))
-            plt.plot(scaleTicker, label=companyName)
-            plt.legend()
+            plt.plot(scaleTicker)
+            plt.legend(companyName)
             st.pyplot(plt)
 
             # Display stock price trend
             st.subheader("Stock Price Trend")
             plt.figure(figsize=(10, 4))
-            plt.plot(stockPriceHistory, label=companyName)
-            plt.legend()
+            plt.plot(stockPriceHistory)
+            plt.legend("Stock Price")
             st.pyplot(plt)
             
             # # Competitor Analysis
