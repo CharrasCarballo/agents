@@ -30,66 +30,72 @@ client = OpenAI(api_key=OPENAI_API_KEY)
 
 # Function to fetch financial data
 def get_financials(ticker):
-    stock = yf.Ticker(ticker)
+    
+    try:
 
-    financials = stock.financials
-
-    ebit = financials.loc["EBIT"] if "EBIT" in financials.index else "N/A"          #EBIT = Net Income + Interest Expense + Taxes (Earnings Before Interest & Taxes)
-    #EBIT is used to evaluate a company’s core profitability from its business operations, without considering tax strategies or financing choices (debt vs. equity).
-
-    ebitda = financials.loc["EBITDA"] if "EBITDA" in financials.index else "N/A"    #EBITDA = EBIT} + Depreciation} + Amortization (Earnings Before Interest, Taxes, Depreciation & Amortization)
-    #EBITDA measures a company’s profitability before non-cash expenses (depreciation & amortization) and financial decisions (interest & taxes).
-
-    grossProfit = financials.loc["Gross Profit"] if "Gross Profit" in financials.index else "N/A"
-    #Gross Profit = Revenue - Cost of Goods Sold; How much is left after subtracting the direct cost of producing goods/services
-
-    netIncome = financials.loc["Net Income"] if "Net Income" in financials.index else "N/A"
-    #Net Income = Total Revenue - Cost of Goods Sold + Operating Expenses + Interest Expense + Taxes + Any Other Costs
-    #It represents the final measure of profitability—i.e., what’s left for shareholders or reinvestment after every cost is paid.
-
-    researchAndDevelopment = financials.loc["Research And Development"] if "Research And Development" in stock.quarterly_financials.index else "N/A"
-
-    totalRevenue = financials.loc["Total Revenue"] if "Total Revenue" in stock.quarterly_financials.index else "N/A"
-    # Total amount of money the company made from all its operations (product sales, services, etc.) before any costs or expenses are deducted.
-
-    balance_sheet = stock.balance_sheet
-
-    ordinaryShares = balance_sheet.loc["Ordinary Shares Number"] if "Ordinary Shares Number" in stock.quarterly_balance_sheet.index else "N/A"
-    #Shares Outstanding → Number of shares currently held by investors (excludes treasury shares). Ordinary shares is the same as Shares outstanding per quarter.
-    #Treasury Stock → Shares the company bought back and holds in reserve (not available for public trading).
-
-    stockHoldersEquity = balance_sheet.loc["Stockholders Equity"] if "Stockholders Equity" in stock.quarterly_balance_sheet.index else "N/A"
-    #The Book Value of a company represents its net asset value, or how much the company would be worth if it sold all its assets and paid off all its liabilities.
-    #The Book value is the same as Stockholders Equity.
-
-    stockPriceHistory = stock.history(period="5y")["Close"]
-
-    marketCap = []
-
-    for day in ordinaryShares.index:
-      
-      startDate = day - timedelta(days=3)
-      endDate = day + timedelta(days=3)
-      stockPrice = np.average(stock.history(start = startDate, end = endDate)["Close"].values)
-      marketCap.append(ordinaryShares.loc[day] * stockPrice)
-
-    financials = {
-        "EBIT": ebit,
-        "EBITDA": ebitda,
-        "Gross Profit": grossProfit,
-        "Net Income": netIncome,
-        "Research And Development": researchAndDevelopment,
-        "Total Revenue": totalRevenue,
-        "Ordinary Shares": ordinaryShares,
-        "Stockholders Equity": stockHoldersEquity,
-        "MarketCap": marketCap,
-        "Company value perception": marketCap/stockHoldersEquity
-    }
-
-    dfTicker = pd.DataFrame(data = financials, index = ordinaryShares.index)
-    scaleTicker = percentIncrease(dfTicker)
-
-    return [financials, scaleTicker, stockPriceHistory, stock.info['longName']]
+        stock = yf.Ticker(ticker)
+    
+        financials = stock.financials
+    
+        ebit = financials.loc["EBIT"] if "EBIT" in financials.index else "N/A"          #EBIT = Net Income + Interest Expense + Taxes (Earnings Before Interest & Taxes)
+        #EBIT is used to evaluate a company’s core profitability from its business operations, without considering tax strategies or financing choices (debt vs. equity).
+    
+        ebitda = financials.loc["EBITDA"] if "EBITDA" in financials.index else "N/A"    #EBITDA = EBIT} + Depreciation} + Amortization (Earnings Before Interest, Taxes, Depreciation & Amortization)
+        #EBITDA measures a company’s profitability before non-cash expenses (depreciation & amortization) and financial decisions (interest & taxes).
+    
+        grossProfit = financials.loc["Gross Profit"] if "Gross Profit" in financials.index else "N/A"
+        #Gross Profit = Revenue - Cost of Goods Sold; How much is left after subtracting the direct cost of producing goods/services
+    
+        netIncome = financials.loc["Net Income"] if "Net Income" in financials.index else "N/A"
+        #Net Income = Total Revenue - Cost of Goods Sold + Operating Expenses + Interest Expense + Taxes + Any Other Costs
+        #It represents the final measure of profitability—i.e., what’s left for shareholders or reinvestment after every cost is paid.
+    
+        researchAndDevelopment = financials.loc["Research And Development"] if "Research And Development" in stock.quarterly_financials.index else "N/A"
+    
+        totalRevenue = financials.loc["Total Revenue"] if "Total Revenue" in stock.quarterly_financials.index else "N/A"
+        # Total amount of money the company made from all its operations (product sales, services, etc.) before any costs or expenses are deducted.
+    
+        balance_sheet = stock.balance_sheet
+    
+        ordinaryShares = balance_sheet.loc["Ordinary Shares Number"] if "Ordinary Shares Number" in stock.quarterly_balance_sheet.index else "N/A"
+        #Shares Outstanding → Number of shares currently held by investors (excludes treasury shares). Ordinary shares is the same as Shares outstanding per quarter.
+        #Treasury Stock → Shares the company bought back and holds in reserve (not available for public trading).
+    
+        stockHoldersEquity = balance_sheet.loc["Stockholders Equity"] if "Stockholders Equity" in stock.quarterly_balance_sheet.index else "N/A"
+        #The Book Value of a company represents its net asset value, or how much the company would be worth if it sold all its assets and paid off all its liabilities.
+        #The Book value is the same as Stockholders Equity.
+    
+        stockPriceHistory = stock.history(period="5y")["Close"]
+    
+        marketCap = []
+    
+        for day in ordinaryShares.index:
+            startDate = day - timedelta(days=3)
+            endDate = day + timedelta(days=3)
+            stockPrice = np.average(stock.history(start = startDate, end = endDate)["Close"].values)
+            marketCap.append(ordinaryShares.loc[day] * stockPrice)
+    
+        financials = {
+            "EBIT": ebit,
+            "EBITDA": ebitda,
+            "Gross Profit": grossProfit,
+            "Net Income": netIncome,
+            "Research And Development": researchAndDevelopment,
+            "Total Revenue": totalRevenue,
+            "Ordinary Shares": ordinaryShares,
+            "Stockholders Equity": stockHoldersEquity,
+            "MarketCap": marketCap,
+            "Company value perception": marketCap/stockHoldersEquity
+        }
+    
+        dfTicker = pd.DataFrame(data = financials, index = ordinaryShares.index)
+        scaleTicker = percentIncrease(dfTicker)
+    
+        return [financials, scaleTicker, stockPriceHistory, stock.info['longName']]
+  
+  except Exception as e:
+        
+        return [None, None, None, f"Error: An unexpected issue occurred with '{ticker}': {str(e)}"]
 
 # Function to compare with competitors
 # def get_competitor_data(ticker):
@@ -146,20 +152,23 @@ def main():
                 # insights = get_ai_insights(company_name)
                 # news = get_latest_news(company_name)
                 # predicted_price = predict_stock_price(ticker)
-            
-            # Display financials
-            st.subheader("Financial Overview")
-            plt.figure(figsize=(10, 4))
-            plt.plot(scaleTicker)
-            plt.legend()
-            st.pyplot(plt)
 
-            # Display stock price trend
-            st.subheader("Stock Price Trend")
-            plt.figure(figsize=(10, 4))
-            plt.plot(stockPriceHistory)
-            plt.legend()
-            st.pyplot(plt)
+            if financials is None:
+                st.error(companyName)  # Display the error message
+            else:
+                # Display financials
+                st.subheader("Financial Overview")
+                plt.figure(figsize=(10, 4))
+                plt.plot(scaleTicker)
+                plt.legend()
+                st.pyplot(plt)
+    
+                # Display stock price trend
+                st.subheader("Stock Price Trend")
+                plt.figure(figsize=(10, 4))
+                plt.plot(stockPriceHistory)
+                plt.legend()
+                st.pyplot(plt)
             
             # # Competitor Analysis
             # st.subheader("Competitor Analysis")
