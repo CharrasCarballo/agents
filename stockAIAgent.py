@@ -140,7 +140,7 @@ def get_financials(ticker):
 # Streamlit UI
 def main():
     st.title("AI Stock Investment Advisor")
-    company_name = st.text_input("Enter Company Name:")
+    #company_name = st.text_input("Enter Company Name:")
     ticker = st.text_input("Enter Stock Ticker Symbol:")
     
     if st.button("Analyze Stock"):
@@ -156,18 +156,73 @@ def main():
             if financials is None:
                 st.error(companyName)  # Display the error message
             else:
-                # Display financials
-                st.subheader("Financial Overview (Percentage Change)")
-                plt.figure(figsize=(20, 8))
-                for column in scaleTicker.columns:
-                  plt.plot(scaleTicker.index, scaleTicker[column], label=column)
-                plt.title(f"Financial Metrics Percentage Change for {companyName}", fontsize=12)
+                # Graph 1: Scaled EBIT and EBITDA
+                st.subheader("EBIT and EBITDA (Percentage Change)")
+                plt.figure(figsize=(10, 4))
+                for metric in ["EBIT", "EBITDA"]:
+                    if metric in scaleTicker.columns:
+                        plt.plot(scaleTicker.index, scaleTicker[metric], label=metric)
+                plt.title(f"EBIT and EBITDA Trends for {companyName}", fontsize=12)
                 plt.xlabel("Date", fontsize=10)
                 plt.ylabel("Percentage Change", fontsize=10)
                 plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
                 plt.grid(True, linestyle='--', alpha=0.7)
-                st.pyplot(plt.gcf())  # Use gcf() to get current figure
-                plt.clf()  # Clear the figure for the next plot
+                st.pyplot(plt.gcf())
+                plt.clf()
+
+                # Graph 2: Scaled Gross Profit, Net Income, Total Revenue
+                st.subheader("Gross Profit, Net Income, and Total Revenue (Percentage Change)")
+                plt.figure(figsize=(10, 4))
+                for metric in ["Gross Profit", "Net Income", "Total Revenue"]:
+                    if metric in scaleTicker.columns:
+                        plt.plot(scaleTicker.index, scaleTicker[metric], label=metric)
+                plt.title(f"Profit and Revenue Trends for {companyName}", fontsize=12)
+                plt.xlabel("Date", fontsize=10)
+                plt.ylabel("Percentage Change", fontsize=10)
+                plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
+                plt.grid(True, linestyle='--', alpha=0.7)
+                st.pyplot(plt.gcf())
+                plt.clf()
+
+                # Graph 3: Scaled Stockholders Equity, MarketCap, Ordinary Shares
+                st.subheader("Equity, Market Cap, and Shares (Percentage Change)")
+                plt.figure(figsize=(10, 4))
+                for metric in ["Stockholders Equity", "MarketCap", "Ordinary Shares"]:
+                    if metric in scaleTicker.columns:
+                        plt.plot(scaleTicker.index, scaleTicker[metric], label=metric)
+                plt.title(f"Equity and Market Trends for {companyName}", fontsize=12)
+                plt.xlabel("Date", fontsize=10)
+                plt.ylabel("Percentage Change", fontsize=10)
+                plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
+                plt.grid(True, linestyle='--', alpha=0.7)
+                st.pyplot(plt.gcf())
+                plt.clf()
+
+                # Graph 4: Raw Company Value Perception
+                st.subheader("Company Value Perception (Raw Data)")
+                plt.figure(figsize=(10, 4))
+                if "Company value perception" in financials:
+                    plt.plot(scaleTicker.index, financials["Company value perception"], label="Company Value Perception", color='purple')
+                plt.title(f"Company Value Perception for {companyName}", fontsize=12)
+                plt.xlabel("Date", fontsize=10)
+                plt.ylabel("Market Cap / Equity Ratio", fontsize=10)
+                plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
+                plt.grid(True, linestyle='--', alpha=0.7)
+                st.pyplot(plt.gcf())
+                plt.clf()
+
+                # Graph 5: Scaled Research and Development
+                st.subheader("Research and Development (Percentage Change)")
+                plt.figure(figsize=(10, 4))
+                if "Research And Development" in scaleTicker.columns:
+                    plt.plot(scaleTicker.index, scaleTicker["Research And Development"], label="R&D", color='green')
+                plt.title(f"R&D Trends for {companyName}", fontsize=12)
+                plt.xlabel("Date", fontsize=10)
+                plt.ylabel("Percentage Change", fontsize=10)
+                plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
+                plt.grid(True, linestyle='--', alpha=0.7)
+                st.pyplot(plt.gcf())
+                plt.clf()
                 
                 # Display stock price trend
                 st.subheader("Stock Price Trend")
