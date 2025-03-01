@@ -178,9 +178,9 @@ def main():
                 plt.clf()
 
                 # Graph 2: Scaled Gross Profit, Net Income, Total Revenue
-                st.subheader("Gross Profit, Net Income, and Total Revenue (Percentage Change)")
+                st.subheader("Total Revenue, Gross Profit and Net Income (Percentage Change)")
                 plt.figure(figsize=(10, 4))
-                for metric in ["Gross Profit", "Net Income", "Total Revenue"]:
+                for metric in ["Total Revenue", "Gross Profit", "Net Income"]:
                     if metric in scaleTicker.columns:
                         plt.plot(scaleTicker.index, scaleTicker[metric], label=metric)
                 plt.title(f"Profit and Revenue Trends for {companyName}", fontsize=12)
@@ -210,9 +210,9 @@ def main():
                 plt.grid(True, linestyle='--', alpha=0.7)
                 st.pyplot(plt.gcf())
                 st.write(
-                    "- **Equity**: Net asset value (assets minus liabilities), or book value, or how much the company would be worth if it sold all its assets and paid off all its liabilities.\n"
+                    "- **Stockholders Equity**: Net asset value (assets minus liabilities), or book value, or how much the company would be worth if it sold all its assets and paid off all its liabilities.\n"
                     "- **MarketCap**: Market value of all shares, reflecting investor perception.\n"
-                    "- **Shares**: Number of shares outstanding, affecting ownership dilution."
+                    "- **Ordinary Shares**: Number of shares available, affecting ownership dilution."
                 )
                 plt.clf()
 
