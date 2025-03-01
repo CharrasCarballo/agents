@@ -173,8 +173,7 @@ def main():
                     "a company’s core profitability from its business operations, without considering tax strategies or financing "
                     "choices (debt vs. equity).\n"
                     "- **EBITDA**: EBIT plus Depreciation and Amortization, reflecting cash flow potential before non-cash expenses."
-                    "            EBITDA measures a company’s profitability before non-cash expenses (depreciation & amortization)\n"
-                    "            and financial decisions (interest & taxes)."
+                    "EBITDA measures a company’s profitability before non-cash expenses (depreciation & amortization) and financial decisions (interest & taxes)."
                 )
                 plt.clf()
 
@@ -190,6 +189,12 @@ def main():
                 plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
                 plt.grid(True, linestyle='--', alpha=0.7)
                 st.pyplot(plt.gcf())
+                st.write(
+                    "- **Total Revenue**: Total amount of money the company made from all its operations (product sales, services, etc.) before any costs or expenses are deducted.\n"
+                    "- **Gross Profit**: Revenue - Cost of Goods Sold; How much is left after subtracting the direct cost of producing goods/services\n"
+                    "- **Net Income**: Total Revenue - (Cost of Goods Sold + Operating Expenses + Interest Expense + Taxes + Any Other Costs). It represents "
+                    "the final measure of profitability—i.e., what’s left for shareholders or reinvestment after every cost is paid."
+                )
                 plt.clf()
 
                 # Graph 3: Scaled Stockholders Equity, MarketCap, Ordinary Shares
@@ -204,6 +209,11 @@ def main():
                 plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
                 plt.grid(True, linestyle='--', alpha=0.7)
                 st.pyplot(plt.gcf())
+                st.write(
+                    "- **Equity**: Net asset value (assets minus liabilities), or book value, or how much the company would be worth if it sold all its assets and paid off all its liabilities.\n"
+                    "- **MarketCap**: Market value of all shares, reflecting investor perception.\n"
+                    "- **Shares**: Number of shares outstanding, affecting ownership dilution."
+                )
                 plt.clf()
 
                 # Graph 4: Raw Company Value Perception
@@ -217,6 +227,9 @@ def main():
                 plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
                 plt.grid(True, linestyle='--', alpha=0.7)
                 st.pyplot(plt.gcf())
+                st.write(
+                    "- **Company Value Perception**: Market Cap divided by Stockholders Equity, indicating how the market values the company relative to its book value."
+                )
                 plt.clf()
 
                 # Graph 5: Scaled Research and Development
@@ -230,6 +243,9 @@ def main():
                 plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
                 plt.grid(True, linestyle='--', alpha=0.7)
                 st.pyplot(plt.gcf())
+                st.write(
+                    "- **Research And Development**: Investment in innovation and future growth, showing commitment to new products or services."
+                )
                 plt.clf()
                 
                 # Display stock price trend
