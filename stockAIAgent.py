@@ -171,7 +171,7 @@ def main():
                 st.write(
                     "- **EBIT**: Net Income + Interest Expense + Taxes (Earnings Before Interest & Taxes). EBIT is used to evaluate "
                     "a company’s core profitability from its business operations, without considering tax strategies or financing "
-                    "choices (debt vs. equity)."
+                    "choices (debt vs. equity).\n"
                     "- **EBITDA**: EBIT plus Depreciation and Amortization, reflecting cash flow potential before non-cash expenses."
                     "            EBITDA measures a company’s profitability before non-cash expenses (depreciation & amortization)\n"
                     "            and financial decisions (interest & taxes)."
