@@ -168,6 +168,14 @@ def main():
                 plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
                 plt.grid(True, linestyle='--', alpha=0.7)
                 st.pyplot(plt.gcf())
+                st.write(
+                    "- **EBIT**: Net Income + Interest Expense + Taxes (Earnings Before Interest & Taxes)\n"
+                    "            EBIT is used to evaluate a company’s core profitability from its business operations, without\n"
+                    "            considering tax strategies or financing choices (debt vs. equity).\n"
+                    "- **EBITDA**: EBIT plus Depreciation and Amortization, reflecting cash flow potential before non-cash expenses."
+                    "            EBITDA measures a company’s profitability before non-cash expenses (depreciation & amortization)\n"
+                    "            and financial decisions (interest & taxes)."
+                )
                 plt.clf()
 
                 # Graph 2: Scaled Gross Profit, Net Income, Total Revenue
