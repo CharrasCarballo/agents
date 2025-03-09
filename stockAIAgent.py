@@ -50,18 +50,18 @@ def get_financials(ticker):
     #Net Income = Total Revenue - Cost of Goods Sold + Operating Expenses + Interest Expense + Taxes + Any Other Costs
     #It represents the final measure of profitability—i.e., what’s left for shareholders or reinvestment after every cost is paid.
 
-    researchAndDevelopment = financials.loc["Research And Development"] if "Research And Development" in stock.quarterly_financials.index else "N/A"
+    researchAndDevelopment = financials.loc["Research And Development"] if "Research And Development" in financials.index else "N/A"
 
-    totalRevenue = financials.loc["Total Revenue"] if "Total Revenue" in stock.quarterly_financials.index else "N/A"
+    totalRevenue = financials.loc["Total Revenue"] if "Total Revenue" in financials.index else "N/A"
     # Total amount of money the company made from all its operations (product sales, services, etc.) before any costs or expenses are deducted.
 
     balance_sheet = stock.balance_sheet
 
-    ordinaryShares = balance_sheet.loc["Ordinary Shares Number"] if "Ordinary Shares Number" in stock.quarterly_balance_sheet.index else "N/A"
+    ordinaryShares = balance_sheet.loc["Ordinary Shares Number"] if "Ordinary Shares Number" in balance_sheet.index else "N/A"
     #Shares Outstanding → Number of shares currently held by investors (excludes treasury shares). Ordinary shares is the same as Shares outstanding per quarter.
     #Treasury Stock → Shares the company bought back and holds in reserve (not available for public trading).
 
-    stockHoldersEquity = balance_sheet.loc["Stockholders Equity"] if "Stockholders Equity" in stock.quarterly_balance_sheet.index else "N/A"
+    stockHoldersEquity = balance_sheet.loc["Stockholders Equity"] if "Stockholders Equity" in balance_sheet.index else "N/A"
     #The Book Value of a company represents its net asset value, or how much the company would be worth if it sold all its assets and paid off all its liabilities.
     #The Book value is the same as Stockholders Equity.
 
