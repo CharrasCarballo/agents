@@ -15,7 +15,10 @@ def percentIncrease(df):
     for i in df:
         vals = df[i].values
         minVal = min(vals)
-        percents = (vals-minVal)/abs(minVal)
+        if minVal == 'N/A':
+          percents = vals
+        else:
+          percents = (vals-minVal)/abs(minVal)
         dfPercents[i] = percents
 
     dfPercents = pd.DataFrame(data = dfPercents,
