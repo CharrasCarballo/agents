@@ -17,6 +17,8 @@ def percentIncrease(df):
         minVal = min(vals)
         if minVal == 'N/A':
           percents = vals
+        elif minVal == 0:
+          percents = vals
         else:
           percents = (vals-minVal)/abs(minVal)
         dfPercents[i] = percents
