@@ -13,11 +13,12 @@ def percentIncrease(df):
     dfPercents = {}
 
     for i in df:
+        mask = df[i] == 'N/A'
+        df.loc[mask, i] = 0
+        df[i] = pd.to_numeric(df[i], errors='coerce').fillna(0)
         vals = df[i].values
         minVal = min(vals)
-        if minVal == 'N/A':
-          percents = vals
-        elif minVal == 0:
+        if minVal == 0:
           percents = vals
         else:
           percents = (vals-minVal)/abs(minVal)
