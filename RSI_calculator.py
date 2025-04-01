@@ -27,20 +27,68 @@ def get_stock_data(symbol, interval, days):
 
 # Get crypto data
 def get_crypto_data(symbol, interval, days):
-    exchange = ccxt.binance()
-    symbol = f"{symbol}/USDT"  # Assuming USDT pair
+    # Try using multiple exchanges with fallback options
+    exchanges = ['kucoin', 'kraken', 'coinbase']
+    
     timeframe_map = {'1h': '1h', '1d': '1d', '4h': '4h', '1w': '1w'}
     since = int((datetime.now() - timedelta(days=days)).timestamp() * 1000)
     limit = days * 24 if interval == '1h' else days * 6 if interval == '4h' else days
     
+    # Formatted symbol
+    formatted_symbol = f"{symbol.upper()}/USDT"  # Assuming USDT pair
+    
+    # Try each exchange
+    for exchange_id in exchanges:
+        try:
+            exchange = getattr(ccxt, exchange_id)()
+            exchange.load_markets()
+            
+            # Check if the symbol is available on this exchange
+            if formatted_symbol not in exchange.symbols:
+                print(f"{formatted_symbol} not available on {exchange_id}, trying another exchange...")
+                continue
+                
+            ohlcv = exchange.fetch_ohlcv(
+                formatted_symbol, 
+                timeframe=timeframe_map[interval], 
+                since=since, 
+                limit=limit
+            )
+            
+            df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+            df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+            df.set_index('timestamp', inplace=True)
+            print(f"Successfully fetched data from {exchange_id}")
+            return df['close']
+            
+        except Exception as e:
+            print(f"Error with {exchange_id}: {str(e)}")
+    
+    # If all exchanges fail, fall back to yfinance
     try:
-        ohlcv = exchange.fetch_ohlcv(symbol, timeframe=timeframe_map[interval], since=since, limit=limit)
-        df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
-        df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
-        df.set_index('timestamp', inplace=True)
-        return df['close']
+        print("Trying yfinance as fallback...")
+        # Convert interval to yfinance format
+        yf_interval_map = {'1h': '1h', '4h': '4h', '1d': '1d', '1w': '1wk'}
+        ticker = f"{symbol}-USD"  # yfinance format
+        
+        data = yf.download(
+            ticker,
+            period=f"{days}d",
+            interval=yf_interval_map[interval],
+            progress=False
+        )
+        
+        if len(data) > 0:
+            print("Successfully fetched data from yfinance")
+            return data['Close']
+        else:
+            raise Exception("No data returned from yfinance")
+            
     except Exception as e:
-        st.error(f"Error fetching crypto data: {str(e)}")
+        error_msg = f"Error fetching crypto data from all sources: {str(e)}"
+        print(error_msg)
+        if 'st' in globals():  # Check if streamlit is available
+            st.error(error_msg)
         return None
 
 # Plot RSI
