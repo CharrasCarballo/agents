@@ -2,3 +2,4 @@ openai
 yfinance
 matplotlib
 ccxt
+plotly
