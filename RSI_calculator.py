@@ -26,70 +26,57 @@ def get_stock_data(symbol, interval, days):
     return df['Close']
 
 # Get crypto data
-def get_crypto_data(symbol, interval, days):
-    # Try using multiple exchanges with fallback options
-    exchanges = ['kucoin', 'kraken', 'coinbase']
+def get_crypto_data(symbol, interval, days, df=pd.DataFrame([], columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])):
+    df_c = df.copy()
     
-    timeframe_map = {'1h': '1h', '1d': '1d', '4h': '4h', '1w': '1w'}
+    timeframe_map = {'1m': '1m', '5m': '5m', '15m': '15m', '30m': '30m', '1h': '1h', '4h': '4h', '1d': '1d', '1w': '1w'}
+    if days > 5:
+        timeframe_limit_map = {'1m': 7200, '5m': 1440, '15m': 480, 
+                               '30m': 240, '1h': 120, '4h': 30, '1d': 5, '1w': 1}
+    else:
+        timeframe_limit_map = {'1m': days * 60 * 24, '5m': days * 12 * 24, '15m': days * 4 * 24, 
+                               '30m': days * 2 * 24, '1h': days * 24, '4h': days * 6, '1d': days, '1w': 1}
+        
     since = int((datetime.now() - timedelta(days=days)).timestamp() * 1000)
-    limit = days * 24 if interval == '1h' else days * 6 if interval == '4h' else days
+    limit = timeframe_limit_map[interval]
     
     # Formatted symbol
     formatted_symbol = f"{symbol.upper()}/USDT"  # Assuming USDT pair
     
     # Try each exchange
-    for exchange_id in exchanges:
-        try:
-            exchange = getattr(ccxt, exchange_id)()
-            exchange.load_markets()
-            
-            # Check if the symbol is available on this exchange
-            if formatted_symbol not in exchange.symbols:
-                print(f"{formatted_symbol} not available on {exchange_id}, trying another exchange...")
-                continue
-                
-            ohlcv = exchange.fetch_ohlcv(
-                formatted_symbol, 
-                timeframe=timeframe_map[interval], 
-                since=since, 
-                limit=limit
-            )
-            
-            df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
-            df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
-            df.set_index('timestamp', inplace=True)
-            print(f"Successfully fetched data from {exchange_id}")
-            return df['close']
-            
-        except Exception as e:
-            print(f"Error with {exchange_id}: {str(e)}")
-    
-    # If all exchanges fail, fall back to yfinance
     try:
-        print("Trying yfinance as fallback...")
-        # Convert interval to yfinance format
-        yf_interval_map = {'1h': '1h', '4h': '4h', '1d': '1d', '1w': '1wk'}
-        ticker = f"{symbol}-USD"  # yfinance format
+        exchange = getattr(ccxt, 'kucoin')()
+        exchange.load_markets()
         
-        data = yf.download(
-            ticker,
-            period=f"{days}d",
-            interval=yf_interval_map[interval],
-            progress=False
+        # Check if the symbol is available on this exchange
+        if formatted_symbol not in exchange.symbols:
+            print(f"{formatted_symbol} not available on {exchange_id}, trying another exchange...")
+            return df_c
+            
+        ohlcv = exchange.fetch_ohlcv(
+            formatted_symbol, 
+            timeframe=timeframe_map[interval], 
+            since=since, 
+            limit=limit
         )
         
-        if len(data) > 0:
-            print("Successfully fetched data from yfinance")
-            return data['Close']
+        temp_df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
+        temp_df['timestamp'] = pd.to_datetime(temp_df['timestamp'], unit='ms')
+        temp_df.set_index('timestamp', inplace=True)
+        # print(f"Successfully fetched data from {exchange_id}")
+        if df_c.empty:
+            df_c = temp_df
         else:
-            raise Exception("No data returned from yfinance")
-            
+            df_c = pd.concat([df_c, temp_df])
+        # print(df_c.shape)
+        if days > 5:
+            return get_crypto_data(symbol, interval, days-5, df_c)
+        else:
+            return df_c
+        
     except Exception as e:
-        error_msg = f"Error fetching crypto data from all sources: {str(e)}"
-        print(error_msg)
-        if 'st' in globals():  # Check if streamlit is available
-            st.error(error_msg)
-        return None
+        print(f"Error with {exchange_id}: {str(e)}")
+        return df_c
 
 # Plot RSI
 def plot_rsi(prices, rsi):
@@ -121,9 +108,9 @@ def main():
     symbol = st.text_input("Enter Symbol (e.g., AAPL for stock, XRP for crypto)", "AAPL")
     asset_type = st.selectbox("Asset Type", ["Stock", "Crypto"])
     interval = st.selectbox("Price Frequency", 
-                          ["1d", "1h", "4h", "1w"] if asset_type == "Crypto" else ["1d"])
-    days = st.slider("Number of Days", 7, 90, 30)
-    rsi_period = st.slider("RSI Period", 5, 30, 14)
+                            ['1m', '5m', '15m', '30m', '1h', '4h', '1d', '1w'] if asset_type == "Crypto" else ["1d"])
+    days = st.slider("Number of Days", 2, 90, 30)
+    rsi_period = st.slider("RSI Period", 5, 6000, 60)
     
     if st.button("Calculate RSI"):
         # Fetch data based on asset type
@@ -137,11 +124,11 @@ def main():
             return
         
         # Calculate RSI
-        rsi = calculate_rsi(prices, rsi_period)
+        rsi = calculate_rsi(prices['close'], rsi_period)
         
         # Create results DataFrame
         results = pd.DataFrame({
-            'Price': prices,
+            'Price': prices['close'],
             'RSI': rsi
         })
         
@@ -150,7 +137,7 @@ def main():
         st.dataframe(results.tail())
         
         # Plot
-        fig = plot_rsi(prices, rsi)
+        fig = plot_rsi(prices['close'], rsi)
         st.plotly_chart(fig)
         
         # Download option
