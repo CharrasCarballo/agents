@@ -105,6 +105,26 @@ def main():
                         st.error(company_name)
                         continue
 
+                    # Download buttons for df_ticker and stock price history
+                    st.write("**Download Financial Data**")
+                    financials_csv = df_ticker.to_csv(index=True)
+                    st.download_button(
+                        label=f"Download {ticker} Financials ({current_date})",
+                        data=financials_csv,
+                        file_name=f"{ticker}_{current_date}_financials.csv",
+                        mime="text/csv"
+                    )
+
+                    st.write("**Download Stock Price History**")
+                    price_history_df = pd.DataFrame(stock_price_history, columns=["Close"])
+                    price_history_csv = price_history_df.to_csv(index=True)
+                    st.download_button(
+                        label=f"Download {ticker} Price History ({current_date})",
+                        data=price_history_csv,
+                        file_name=f"{ticker}_{current_date}_price_history.csv",
+                        mime="text/csv"
+                    )
+
                     # Graph 1: Scaled EBIT and EBITDA
                     st.write("**EBIT and EBITDA (Percentage Change)**")
                     plt.figure(figsize=(10, 4))
