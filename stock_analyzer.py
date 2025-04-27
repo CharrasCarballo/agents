@@ -83,10 +83,10 @@ def get_financials(ticker):
         df_ticker = pd.DataFrame(data=financials_data, index=ordinary_shares.index)
         scale_ticker = percentIncrease(df_ticker)
 
-        return [financials_data, scale_ticker, stock_price_history, stock.info['longName'], None]
+        return [financials_data, scale_ticker, stock_price_history, stock.info['longName'], df_ticker, None]
     
     except Exception as e:
-        return [None, None, None, f"Error: An unexpected issue occurred with '{ticker}': {str(e)}", str(e)]
+        return [None, None, None, f"Error: An unexpected issue occurred with '{ticker}': {str(e)}", None, str(e)]
 
 # Streamlit UI
 def main():
@@ -99,7 +99,7 @@ def main():
             with st.spinner("Fetching data..."):
                 for ticker in tickers:
                     st.subheader(f"Analysis for {ticker}")
-                    [financials, scale_ticker, stock_price_history, company_name, error] = get_financials(ticker)
+                    [financials, scale_ticker, stock_price_history, company_name, df_ticker, error] = get_financials(ticker)
                     
                     if financials is None:
                         st.error(company_name)
