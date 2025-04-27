@@ -96,6 +96,7 @@ def main():
     if st.button("Analyze Stocks"):
         if ticker_input:
             tickers = [t.strip().upper() for t in ticker_input.split(",")]
+            current_date = datetime.now().strftime("%Y-%m-%d")
             with st.spinner("Fetching data..."):
                 for ticker in tickers:
                     st.subheader(f"Analysis for {ticker}")
