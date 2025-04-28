@@ -69,20 +69,36 @@ def get_financials(ticker):
         financials_data = {
             "EBIT": ebit,
             "EBITDA": ebitda,
+            
+            "Total Revenue": total_revenue,
             "Gross Profit": gross_profit,
             "Net Income": net_income,
-            "Research And Development": research_development,
-            "Total Revenue": total_revenue,
-            "Ordinary Shares": ordinary_shares,
-            "Stockholders Equity": stockholders_equity,
+            
             "MarketCap": market_cap,
+            "Stockholders Equity": stockholders_equity,
+            "Ordinary Shares": ordinary_shares,
+
+            "MaCap/TR": market_cap/total_revenue,
+            "MaCap/GP": market_cap/gross_profit,
+            "MaCap/NI": market_cap/net_income,
+
+            "StEq/TR": stockholders_equity/total_revenue,
+            "StEq/GP": stockholders_equity/gross_profit,
+            "StEq/NI": stockholders_equity/net_income,
+
             "Company value perception": [mc / se if se != 0 else 0 for mc, se in zip(market_cap, stockholders_equity)],
+
             "Dividend Yield": dividend_yield,
+            
             "Total Debt": total_debt,
-            "Total Assets": total_assets
+            "Total Assets": total_assets,
+            
+            "Research And Development": research_development
         }
 
         df_ticker = pd.DataFrame(data=financials_data, index=ordinary_shares.index)
+        df_ticker = df_ticker.sort_index(ascending=True)
+        df_ticker.dropna(inplace=True, thresh=len(df_ticker.columns)-2)
         scale_ticker = percentIncrease(df_ticker)
 
         return [financials_data, scale_ticker, stock_price_history, stock.info['longName'], df_ticker, None]
@@ -105,8 +121,9 @@ def main():
             with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
                 with st.spinner("Fetching data..."):
                     for ticker in tickers:
-                        st.subheader(f"Analysis for {ticker}")
+                        
                         [financials, scale_ticker, stock_price_history, company_name, df_ticker, error] = get_financials(ticker)
+                        st.subheader(f"Analysis for {company_name}")
                         
                         if financials is None:
                             st.error(company_name)
@@ -124,14 +141,14 @@ def main():
                         zip_file.writestr(f"{ticker}_{current_date}_price_history.csv", price_history_csv)
     
                         # Graph 1: Scaled EBIT and EBITDA
-                        st.write("**EBIT and EBITDA (Percentage Change)**")
+                        st.write("**EBIT and EBITDA**")
                         plt.figure(figsize=(10, 4))
                         for metric in ["EBIT", "EBITDA"]:
-                            if metric in scale_ticker.columns:
-                                plt.plot(scale_ticker.index, scale_ticker[metric], label=metric)
+                            if metric in financials.columns:
+                                plt.plot(financials.index, financials[metric], label=metric)
                         plt.title(f"EBIT and EBITDA Trends for {company_name}", fontsize=12)
                         plt.xlabel("Date", fontsize=10)
-                        plt.ylabel("Percentage Change", fontsize=10)
+                        #plt.ylabel("Percentage Change", fontsize=10)
                         plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
                         plt.grid(True, linestyle='--', alpha=0.7)
                         st.pyplot(plt.gcf())
@@ -142,14 +159,14 @@ def main():
                         plt.clf()
     
                         # Graph 2: Scaled Gross Profit, Net Income, Total Revenue
-                        st.write("**Total Revenue, Gross Profit, and Net Income (Percentage Change)**")
+                        st.write("**Total Revenue, Gross Profit, and Net Income**")
                         plt.figure(figsize=(10, 4))
                         for metric in ["Total Revenue", "Gross Profit", "Net Income"]:
-                            if metric in scale_ticker.columns:
-                                plt.plot(scale_ticker.index, scale_ticker[metric], label=metric)
+                            if metric in financials.columns:
+                                plt.plot(financials.index, financials[metric], label=metric)
                         plt.title(f"Profit and Revenue Trends for {company_name}", fontsize=12)
                         plt.xlabel("Date", fontsize=10)
-                        plt.ylabel("Percentage Change", fontsize=10)
+                        #plt.ylabel("Percentage Change", fontsize=10)
                         plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
                         plt.grid(True, linestyle='--', alpha=0.7)
                         st.pyplot(plt.gcf())
@@ -161,14 +178,14 @@ def main():
                         plt.clf()
     
                         # Graph 3: Scaled Stockholders Equity, MarketCap, Ordinary Shares
-                        st.write("**Equity, Market Cap, and Shares (Percentage Change)**")
+                        st.write("**Equity, Market Cap, and Shares**")
                         plt.figure(figsize=(10, 4))
                         for metric in ["Stockholders Equity", "MarketCap", "Ordinary Shares"]:
-                            if metric in scale_ticker.columns:
-                                plt.plot(scale_ticker.index, scale_ticker[metric], label=metric)
+                            if metric in financials.columns:
+                                plt.plot(financials.index, financials[metric], label=metric)
                         plt.title(f"Equity and Market Trends for {company_name}", fontsize=12)
                         plt.xlabel("Date", fontsize=10)
-                        plt.ylabel("Percentage Change", fontsize=10)
+                        #plt.ylabel("Percentage Change", fontsize=10)
                         plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
                         plt.grid(True, linestyle='--', alpha=0.7)
                         st.pyplot(plt.gcf())
@@ -178,8 +195,44 @@ def main():
                             "- **Ordinary Shares**: Number of shares available."
                         )
                         plt.clf()
+
+                        # Graph 4: Market Cap ratio with profits
+                        st.write("**Market Cap ratio with profits**")
+                        plt.figure(figsize=(10, 4))
+                        for metric in ["MaCap/TR", "MaCap/GP", "MaCap/NI"]:
+                            if metric in financials.columns:
+                                plt.plot(financials.index, financials[metric], label=metric)
+                        plt.title(f"Ratio between Market Cap and profits for {company_name}", fontsize=12)
+                        plt.xlabel("Date", fontsize=10)
+                        plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
+                        plt.grid(True, linestyle='--', alpha=0.7)
+                        st.pyplot(plt.gcf())
+                        st.write(
+                            "- **MaCap/TR**: Market capital divided by total revenue.\n"
+                            "- **MaCap/GP**: Market capital divided by gross profit.\n"
+                            "- **MaCap/NI**: Market capital divided by net income."
+                        )
+                        plt.clf()
+
+                        # Graph 5: Stockholders Equity ratio with profits
+                        st.write("**Stockholders Equity ratio with profits**")
+                        plt.figure(figsize=(10, 4))
+                        for metric in ["StEq/TR", "StEq/GP", "StEq/NI"]:
+                            if metric in financials.columns:
+                                plt.plot(financials.index, financials[metric], label=metric)
+                        plt.title(f"Ratio between company value and profits for {company_name}", fontsize=12)
+                        plt.xlabel("Date", fontsize=10)
+                        plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
+                        plt.grid(True, linestyle='--', alpha=0.7)
+                        st.pyplot(plt.gcf())
+                        st.write(
+                            "- **StEq/TR**: Net asset value by total revenue.\n"
+                            "- **StEq/GP**: Net asset value by gross profit.\n"
+                            "- **StEq/NI**: Net asset value by net income."
+                        )
+                        plt.clf()
     
-                        # Graph 4: Raw Company Value Perception
+                        # Graph 6: Raw Company Value Perception
                         st.write("**Company Value Perception (Raw Data)**")
                         plt.figure(figsize=(10, 4))
                         if "Company value perception" in financials:
@@ -194,24 +247,8 @@ def main():
                             "- **Company Value Perception**: Market Cap divided by Stockholders Equity."
                         )
                         plt.clf()
-    
-                        # Graph 5: Scaled Research and Development
-                        st.write("**Research and Development (Percentage Change)**")
-                        plt.figure(figsize=(10, 4))
-                        if "Research And Development" in scale_ticker.columns:
-                            plt.plot(scale_ticker.index, scale_ticker["Research And Development"], label="R&D", color='green')
-                        plt.title(f"R&D Trends for {company_name}", fontsize=12)
-                        plt.xlabel("Date", fontsize=10)
-                        plt.ylabel("Percentage Change", fontsize=10)
-                        plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
-                        plt.grid(True, linestyle='--', alpha=0.7)
-                        st.pyplot(plt.gcf())
-                        st.write(
-                            "- **Research And Development**: Investment in innovation."
-                        )
-                        plt.clf()
-    
-                        # Graph 6: Dividend Yield
+
+                        # Graph 7: Dividend Yield
                         st.write("**Dividend Yield (Raw Data)**")
                         plt.figure(figsize=(10, 4))
                         if "Dividend Yield" in financials:
@@ -227,12 +264,12 @@ def main():
                         )
                         plt.clf()
     
-                        # Graph 7: Total Debt and Total Assets
+                        # Graph 8: Total Debt and Total Assets
                         st.write("**Total Debt and Total Assets (Percentage Change)**")
                         plt.figure(figsize=(10, 4))
                         for metric in ["Total Debt", "Total Assets"]:
                             if metric in scale_ticker.columns:
-                                plt.plot(scale_ticker.index, scale_ticker[metric], label=metric)
+                                plt.plot(scale_ticker.index, financials[metric], label=metric)
                         plt.title(f"Debt and Assets Trends for {company_name}", fontsize=12)
                         plt.xlabel("Date", fontsize=10)
                         plt.ylabel("Percentage Change", fontsize=10)
@@ -245,7 +282,23 @@ def main():
                         )
                         plt.clf()
     
-                        # Graph 8: Stock Price Trend
+                        # Graph 9: Scaled Research and Development
+                        st.write("**Research and Development (Percentage Change)**")
+                        plt.figure(figsize=(10, 4))
+                        if "Research And Development" in financials.columns:
+                            plt.plot(scale_ticker.index, financials["Research And Development"], label="R&D", color='green')
+                        plt.title(f"R&D Trends for {company_name}", fontsize=12)
+                        plt.xlabel("Date", fontsize=10)
+                        plt.ylabel("Percentage Change", fontsize=10)
+                        plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
+                        plt.grid(True, linestyle='--', alpha=0.7)
+                        st.pyplot(plt.gcf())
+                        st.write(
+                            "- **Research And Development**: Investment in innovation."
+                        )
+                        plt.clf()
+    
+                        # Graph 10: Stock Price Trend
                         st.write("**Stock Price Trend**")
                         plt.figure(figsize=(10, 4))
                         plt.plot(stock_price_history.index, stock_price_history, label="Closing Price", color='blue')
