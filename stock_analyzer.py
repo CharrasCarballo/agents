@@ -144,8 +144,8 @@ def main():
                         st.write("**EBIT and EBITDA**")
                         plt.figure(figsize=(10, 4))
                         for metric in ["EBIT", "EBITDA"]:
-                            if metric in financials.columns:
-                                plt.plot(financials.index, financials[metric], label=metric)
+                            if metric in df_ticker.columns:
+                                plt.plot(df_ticker.index, df_ticker[metric], label=metric)
                         plt.title(f"EBIT and EBITDA Trends for {company_name}", fontsize=12)
                         plt.xlabel("Date", fontsize=10)
                         #plt.ylabel("Percentage Change", fontsize=10)
@@ -162,8 +162,8 @@ def main():
                         st.write("**Total Revenue, Gross Profit, and Net Income**")
                         plt.figure(figsize=(10, 4))
                         for metric in ["Total Revenue", "Gross Profit", "Net Income"]:
-                            if metric in financials.columns:
-                                plt.plot(financials.index, financials[metric], label=metric)
+                            if metric in df_ticker.columns:
+                                plt.plot(df_ticker.index, df_ticker[metric], label=metric)
                         plt.title(f"Profit and Revenue Trends for {company_name}", fontsize=12)
                         plt.xlabel("Date", fontsize=10)
                         #plt.ylabel("Percentage Change", fontsize=10)
@@ -181,8 +181,8 @@ def main():
                         st.write("**Equity, Market Cap, and Shares**")
                         plt.figure(figsize=(10, 4))
                         for metric in ["Stockholders Equity", "MarketCap", "Ordinary Shares"]:
-                            if metric in financials.columns:
-                                plt.plot(financials.index, financials[metric], label=metric)
+                            if metric in df_ticker.columns:
+                                plt.plot(df_ticker.index, df_ticker[metric], label=metric)
                         plt.title(f"Equity and Market Trends for {company_name}", fontsize=12)
                         plt.xlabel("Date", fontsize=10)
                         #plt.ylabel("Percentage Change", fontsize=10)
@@ -200,8 +200,8 @@ def main():
                         st.write("**Market Cap ratio with profits**")
                         plt.figure(figsize=(10, 4))
                         for metric in ["MaCap/TR", "MaCap/GP", "MaCap/NI"]:
-                            if metric in financials.columns:
-                                plt.plot(financials.index, financials[metric], label=metric)
+                            if metric in df_ticker.columns:
+                                plt.plot(df_ticker.index, df_ticker[metric], label=metric)
                         plt.title(f"Ratio between Market Cap and profits for {company_name}", fontsize=12)
                         plt.xlabel("Date", fontsize=10)
                         plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -218,8 +218,8 @@ def main():
                         st.write("**Stockholders Equity ratio with profits**")
                         plt.figure(figsize=(10, 4))
                         for metric in ["StEq/TR", "StEq/GP", "StEq/NI"]:
-                            if metric in financials.columns:
-                                plt.plot(financials.index, financials[metric], label=metric)
+                            if metric in df_ticker.columns:
+                                plt.plot(df_ticker.index, df_ticker[metric], label=metric)
                         plt.title(f"Ratio between company value and profits for {company_name}", fontsize=12)
                         plt.xlabel("Date", fontsize=10)
                         plt.legend(title="Metrics", bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -235,8 +235,8 @@ def main():
                         # Graph 6: Raw Company Value Perception
                         st.write("**Company Value Perception (Raw Data)**")
                         plt.figure(figsize=(10, 4))
-                        if "Company value perception" in financials:
-                            plt.plot(scale_ticker.index, financials["Company value perception"], label="Company Value Perception", color='purple')
+                        if "Company value perception" in df_ticker.columns:
+                            plt.plot(df_ticker.index, df_ticker["Company value perception"], label="Company Value Perception", color='purple')
                         plt.title(f"Company Value Perception for {company_name}", fontsize=12)
                         plt.xlabel("Date", fontsize=10)
                         plt.ylabel("Market Cap / Equity Ratio", fontsize=10)
@@ -251,8 +251,8 @@ def main():
                         # Graph 7: Dividend Yield
                         st.write("**Dividend Yield (Raw Data)**")
                         plt.figure(figsize=(10, 4))
-                        if "Dividend Yield" in financials:
-                            plt.plot(scale_ticker.index, financials["Dividend Yield"], label="Dividend Yield", color='orange')
+                        if "Dividend Yield" in df_ticker.columns:
+                            plt.plot(df_ticker.index, df_ticker["Dividend Yield"], label="Dividend Yield", color='orange')
                         plt.title(f"Dividend Yield for {company_name}", fontsize=12)
                         plt.xlabel("Date", fontsize=10)
                         plt.ylabel("Dividend / Stock Price", fontsize=10)
@@ -268,8 +268,8 @@ def main():
                         st.write("**Total Debt and Total Assets (Percentage Change)**")
                         plt.figure(figsize=(10, 4))
                         for metric in ["Total Debt", "Total Assets"]:
-                            if metric in scale_ticker.columns:
-                                plt.plot(scale_ticker.index, financials[metric], label=metric)
+                            if metric in df_ticker.columns:
+                                plt.plot(df_ticker.index, df_ticker[metric], label=metric)
                         plt.title(f"Debt and Assets Trends for {company_name}", fontsize=12)
                         plt.xlabel("Date", fontsize=10)
                         plt.ylabel("Percentage Change", fontsize=10)
@@ -285,8 +285,8 @@ def main():
                         # Graph 9: Scaled Research and Development
                         st.write("**Research and Development (Percentage Change)**")
                         plt.figure(figsize=(10, 4))
-                        if "Research And Development" in financials.columns:
-                            plt.plot(scale_ticker.index, financials["Research And Development"], label="R&D", color='green')
+                        if "Research And Development" in df_ticker.columns:
+                            plt.plot(df_ticker.index, df_ticker["Research And Development"], label="R&D", color='green')
                         plt.title(f"R&D Trends for {company_name}", fontsize=12)
                         plt.xlabel("Date", fontsize=10)
                         plt.ylabel("Percentage Change", fontsize=10)
