@@ -66,6 +66,36 @@ def get_financials(ticker):
             stock_price = np.average(stock.history(start=start_date, end=end_date)["Close"].values)
             market_cap.append(ordinary_shares.loc[day] * stock_price)
 
+        try:
+            MaCap_TR = market_cap/total_revenue
+        except:
+            MaCap_TR = market_cap * 0
+
+        try:
+            MaCap_GP = market_cap/gross_profit
+        except:
+            MaCap_GP = market_cap * 0
+
+        try:
+            MaCap_NI = market_cap/net_income
+        except:
+            MaCap_NI = market_cap * 0
+
+        try:
+            StEq_TR = stockholders_equity/total_revenue
+        except:
+            StEq_TR = stockholders_equity * 0
+
+        try:
+            StEq_GP = stockholders_equity/gross_profit
+        except:
+            StEq_GP = stockholders_equity * 0
+
+        try:
+            StEq_NI = stockholders_equity/net_income
+        except:
+            StEq_NI = stockholders_equity * 0
+
         financials_data = {
             "EBIT": ebit,
             "EBITDA": ebitda,
@@ -78,13 +108,13 @@ def get_financials(ticker):
             "Stockholders Equity": stockholders_equity,
             "Ordinary Shares": ordinary_shares,
 
-            "MaCap/TR": market_cap/total_revenue,
-            "MaCap/GP": market_cap/gross_profit,
-            "MaCap/NI": market_cap/net_income,
+            "MaCap/TR": MaCap_TR,
+            "MaCap/GP": MaCap_GP,
+            "MaCap/NI": MaCap_NI,
 
-            "StEq/TR": stockholders_equity/total_revenue,
-            "StEq/GP": stockholders_equity/gross_profit,
-            "StEq/NI": stockholders_equity/net_income,
+            "StEq/TR": StEq_TR,
+            "StEq/GP": StEq_GP,
+            "StEq/NI": StEq_NI,
 
             "Company value perception": [mc / se if se != 0 else 0 for mc, se in zip(market_cap, stockholders_equity)],
 
