@@ -65,6 +65,7 @@ def get_financials(ticker):
             end_date = day + timedelta(days=3)
             stock_price = np.average(stock.history(start=start_date, end=end_date)["Close"].values)
             market_cap.append(ordinary_shares.loc[day] * stock_price)
+        market_cap = pd.Series(market_cap, index=ordinary_shares.index)
 
         try:
             MaCap_TR = market_cap/total_revenue
